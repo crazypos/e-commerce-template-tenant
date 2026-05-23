@@ -120,15 +120,34 @@ interface ProductDetailView {
 | `loginAction(email, password, rememberMe)` | `User` | 登录，自动设置 cookie |
 | `logoutAction()` | `void` | 登出 |
 | `getUserAction()` | `User \| null` | 获取当前登录用户 |
-| `registerAction(payload)` | `{ success }` | 注册 |
+| `registerAction(payload)` | `{ success }` | 注册（个人账户） |
+| `registerBusinessAction(payload)` | `{ success }` | 注册（企业账户，含 ABN 验证） |
 | `sendVerifyCodeAction(email)` | `{ success }` | 发送验证码 |
 | `resetPasswordAction(email, password, code)` | `{ success }` | 重置密码 |
 | `updateProfileAction(payload)` | `User` | 更新个人信息 |
 | `changeBranchAction(branchId)` | `void` | 切换门店 |
 
 ```tsx
-import { loginAction, getUserAction } from '@/src/actions/auth';
-// User: { id, firstName, lastName, name, email, phone, timezone }
+import { loginAction, getUserAction, registerBusinessAction } from '@/src/actions/auth';
+// User: { id, firstName, lastName, name, email, phone, timezone, accountType?, company?, abn? }
+
+// 企业注册示例
+await registerBusinessAction({
+  email: 'business@example.com',
+  code: '123456',
+  first_name: 'John',
+  last_name: 'Doe',
+  telephone: '0412345678',
+  password: 'Pass1234',
+  confirm_password: 'Pass1234',
+  business_name: 'Example Pty Ltd',
+  abn: '11 222 333 444',
+  address: '123 Main St',
+  city: 'Sydney',
+  state: 'New South Wales',
+  zipcode: '2000',
+  country: 'AU',
+});
 ```
 
 ### 购物车
@@ -192,6 +211,44 @@ import { addToCartAction } from '@/src/actions/cart';
 |------|--------|------|
 | `sendContactAction(data)` | `{ success }` | 提交联系表单 |
 
+### ABN 查询
+
+| 函数 | 返回值 | 说明 |
+|------|--------|------|
+| `searchABNAction(sn)` | `{ data: ABN }` | 查询/验证 ABN（通过 Strapi） |
+
+```tsx
+import { searchABNAction } from '@/src/actions/abn';
+
+const result = await searchABNAction('11222333444');
+// result.data: { sn: "11222333444", company: "Example Pty Ltd", active: true }
+```
+
+### 企业团队管理
+
+| 函数 | 返回值 | 说明 |
+|------|--------|------|
+| `getTeamMembersAction(opts?)` | `{ data: MemberItem[], total, current_page, last_page }` | 团队成员列表 |
+| `addTeamMemberAction(payload)` | `{ success }` | 添加团队成员 |
+| `editTeamMemberAction(id, payload)` | `{ success }` | 编辑团队成员 |
+
+```tsx
+import { getTeamMembersAction, addTeamMemberAction } from '@/src/actions/teamMembers';
+
+// 列表
+const members = await getTeamMembersAction({ page: 1, per_page: 20 });
+
+// 添加成员
+await addTeamMemberAction({
+  first_name: 'Jane',
+  last_name: 'Smith',
+  email: 'jane@example.com',
+  password: 'Pass1234',
+  confirm_password: 'Pass1234',
+  role: 1,
+});
+```
+
 ### 首页内容（Strapi CMS）
 
 | 函数 | 返回值 | 说明 |
@@ -254,6 +311,8 @@ const detail = await getWarrantyDetailAction(42);
 | `useMenu()` | `{ menus, loading, fetchMenu }` | 导航菜单 |
 | `useHomeData()` | `{ contents, products, loading, fetchHomeData }` | 首页数据 |
 | `useContact()` | `{ isSubmitting, isSubmitted, submitContact, reset }` | 联系表单 |
+| `useABNSearch()` | `{ searching, searchABN }` | ABN 查询验证（企业注册用） |
+| `useTeamMembers()` | `{ list, total, currentPage, lastPage, loading, fetch, addMember, editMember }` | 企业团队成员管理 |
 | `useWarrantyList()` | `{ list, total, currentPage, lastPage, loading, fetch }` | RMA 订单列表 |
 | `useWarrantyDetail()` | `{ detail, loading, fetch }` | RMA 详情 |
 | `useWarrantySearch()` | `{ searching, searchProducts, searchPhones, searchByImei }` | RMA 产品/IMEI 搜索 |
