@@ -3,3 +3,4 @@ node_modules/
 *.log
 
 # tenant 自定义模板，由 cp -rf templates/default templates/my-template 创建
+templates/my-template/
