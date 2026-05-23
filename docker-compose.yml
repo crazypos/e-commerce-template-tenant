@@ -6,7 +6,7 @@ services:
     ports:
       - "3303:3303"
     environment:
-      - TEMPLATE=default
+      - TEMPLATE=my-template
       - ADMIN_TOKEN=your_admin_token
       - STRAPI_TOKEN=your_strapi_token
       - NEXT_PUBLIC_API_URL=https://test3.crazypos.com/api
