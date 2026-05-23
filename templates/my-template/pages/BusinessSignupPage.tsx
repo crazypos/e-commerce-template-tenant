@@ -7,8 +7,8 @@ import { useBusinessSignup } from '@/src/hooks/useBusinessSignup';
 
 type AccountType = 'individual' | 'business';
 
-export function SignupPage() {
-  const [accountType, setAccountType] = useState<AccountType>('individual');
+export function BusinessSignupPage() {
+  const [accountType, setAccountType] = useState<AccountType>('business');
 
   return (
     <div className="min-h-[70vh] flex items-center justify-center px-4 py-12 bg-(--primary-light2)">
@@ -20,31 +20,6 @@ export function SignupPage() {
         <div className="grid grid-cols-2 gap-4 mb-8">
           <button
             type="button"
-            onClick={() => setAccountType('individual')}
-            className={`p-5 rounded-xl border-2 text-center transition-all ${
-              accountType === 'individual'
-                ? 'border-(--primary) bg-(--primary-light)'
-                : 'border-gray-200 hover:border-gray-300'
-            }`}
-          >
-            <div className="w-16 h-16 rounded-full border-4 border-(--primary) flex items-center justify-center mx-auto mb-3 bg-(--primary-light)">
-              <svg className="w-8 h-8 text-(--primary)" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                />
-              </svg>
-            </div>
-            <h3 className={`font-semibold ${accountType === 'individual' ? 'text-(--primary)' : 'text-gray-700'}`}>
-              Individual
-            </h3>
-            <p className="text-xs text-gray-400 mt-1">Retail pricing for personal use</p>
-          </button>
-
-          <button
-            type="button"
             onClick={() => setAccountType('business')}
             className={`p-5 rounded-xl border-2 text-center transition-all ${
               accountType === 'business'
@@ -52,7 +27,7 @@ export function SignupPage() {
                 : 'border-gray-200 hover:border-gray-300'
             }`}
           >
-            <div className="w-16 h-16 rounded-full border-4 border-(--primary) flex items-center justify-center mx-auto mb-3 bg-(--primary-light)">
+            <div className="w-16 h-16 rounded-full border-4 border-(--primary) flex items-center justify-center mx-auto mb-3">
               <svg className="w-8 h-8 text-(--primary)" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path
                   strokeLinecap="round"
@@ -66,6 +41,31 @@ export function SignupPage() {
               Business Account
             </h3>
             <p className="text-xs text-gray-400 mt-1">Wholesale pricing &amp; bulk discounts</p>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setAccountType('individual')}
+            className={`p-5 rounded-xl border-2 text-center transition-all ${
+              accountType === 'individual'
+                ? 'border-(--primary) bg-(--primary-light)'
+                : 'border-gray-200 hover:border-gray-300'
+            }`}
+          >
+            <div className="w-16 h-16 rounded-full border-4 border-(--primary) flex items-center justify-center mx-auto mb-3">
+              <svg className="w-8 h-8 text-(--primary)" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                />
+              </svg>
+            </div>
+            <h3 className={`font-semibold ${accountType === 'individual' ? 'text-(--primary)' : 'text-gray-700'}`}>
+              Individual
+            </h3>
+            <p className="text-xs text-gray-400 mt-1">Retail pricing for personal use</p>
           </button>
         </div>
 
@@ -359,7 +359,7 @@ function BusinessSignupForm() {
   );
 }
 
-// ── Shared ──
+// ── Shared field component ──
 
 function Field({
   label,

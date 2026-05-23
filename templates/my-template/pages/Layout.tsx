@@ -22,7 +22,7 @@ export const Layout: React.FC<{ children: React.ReactNode; menus: MenuType[] }> 
       {/* Top Announcement Bar */}
       <div className="bg-(--primary) text-white text-xs py-2 px-4 text-center font-medium">
         <div className="max-w-7xl mx-auto">
-          Free shipping on orders over $50
+          Free shipping on orders over $50 | Afterpay &amp; PayPal available
         </div>
       </div>
 
@@ -33,12 +33,12 @@ export const Layout: React.FC<{ children: React.ReactNode; menus: MenuType[] }> 
             {/* Logo */}
             <Link href="/" aria-label="Home" className="flex items-center gap-2 shrink-0">
               <div className="w-9 h-9 bg-(--primary) rounded-lg flex items-center justify-center text-white font-bold text-sm">
-                S
+                T
               </div>
-              <span className="text-lg font-bold text-(--text-primary) hidden sm:block">My Store</span>
+              <span className="text-lg font-bold text-(--text-primary) hidden sm:block">TICO</span>
             </Link>
 
-            {/* Desktop Nav */}
+            {/* Desktop Nav - 走接口菜单 */}
             <nav className="hidden md:flex items-center flex-1 min-w-0 justify-center">
               <NavigationMenu variant="desktop" menus={menus} pathname={pathname} user={user} />
             </nav>
@@ -79,7 +79,7 @@ export const Layout: React.FC<{ children: React.ReactNode; menus: MenuType[] }> 
         </div>
       </header>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu - 走接口菜单 */}
       <motion.div
         initial={{ opacity: 0, height: 0 }}
         animate={
@@ -110,12 +110,12 @@ export const Layout: React.FC<{ children: React.ReactNode; menus: MenuType[] }> 
             <div className="col-span-2 md:col-span-1">
               <div className="flex items-center gap-2 mb-3">
                 <div className="w-8 h-8 bg-(--primary) rounded-lg flex items-center justify-center text-white font-bold text-xs">
-                  S
+                  T
                 </div>
-                <span className="text-white font-bold">My Store</span>
+                <span className="text-white font-bold">TICO</span>
               </div>
               <p className="text-sm leading-relaxed">
-                Welcome to My Store. Discover amazing products at great prices.
+                Your trusted source for phone accessories and tech essentials.
               </p>
             </div>
             <div>
@@ -146,7 +146,7 @@ export const Layout: React.FC<{ children: React.ReactNode; menus: MenuType[] }> 
             </div>
           </div>
           <div className="mt-8 pt-6 border-t border-gray-700 text-center text-xs">
-            &copy; {new Date().getFullYear()} My Store. All rights reserved.
+            &copy; {new Date().getFullYear()} TICO. All rights reserved.
           </div>
         </div>
       </footer>

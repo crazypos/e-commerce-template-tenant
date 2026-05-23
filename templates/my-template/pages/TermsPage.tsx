@@ -1,4 +1,4 @@
-import { TermsContent } from '@/src/components/TermsContent';
+import { TermsContent } from '../components';
 
 export function TermsPage() {
   return <TermsContent />;
