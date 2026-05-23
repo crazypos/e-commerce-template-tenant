@@ -41,7 +41,7 @@ templates/
 
 ### `templates/my-template/`（你的自定义模板 — ✅ 自由修改）
 
-从 `default` 复制后自行修改，平台更新不影响它。
+从 `default` 复制后自行修改，**不在版本控制中**，平台更新不影响它。
 
 **创建方式：**
 
@@ -54,7 +54,7 @@ cp -rf templates/default templates/my-template
 docker compose up
 ```
 
-然后你的所有改动都只影响 `my-template/`，`git pull` 更新 `default/` 时绝不冲突。
+之后 `git pull` 只会更新 `default/`，`my-template/` 完全不受影响。
 
 ---
 
@@ -692,7 +692,17 @@ cp templates/default/components/AddToCartSection.tsx templates/my-template/compo
 
 ### Q: `git pull` 会不会把 default 里面的组件覆盖掉？
 
-会的。`default/` 是平台维护的，每次 `git pull` 都可能更新。所以**不要直接改 `default/`**。把要改的文件复制到 `my-template/` 后再改。
+会的。`default/` 是平台维护的，每次 `git pull` 都可能更新。所以**不要直接改 `default/`**。
+
+先复制到 `my-template`（本地创建，不在 repo 里），再改：
+
+```bash
+cp -rf templates/default templates/my-template
+# docker-compose.yml 里 TEMPLATE=my-template
+# 重启
+```
+
+之后 `my-template/` 完全不受 `git pull` 影响。需要同步平台更新时手动对比合并。
 
 ### Q: `my-template` 里的组件怎么导入？
 
