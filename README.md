@@ -19,6 +19,7 @@ CrazyPOS 电商模板的 tenant 开发环境。
 │       ├── theme.ts            ← Ant Design 主题
 │       └── style.css           ← 品牌色变量
 ├── docker-compose.yml          ← 运行配置（token 已注入）
+├── types.ts                    ← API 类型定义（IDE 自动补全用，不需修改）
 └── .gitignore
 ```
 
