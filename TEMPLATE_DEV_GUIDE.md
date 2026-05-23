@@ -203,6 +203,39 @@ import { getHomeContent, type Content } from '@/src/actions/plugins';
 // Content types: 'banner' | 'rich-text' | 'collection' | 'section' | 'tabs'
 ```
 
+### RMA / Warranty
+
+| 函数 | 返回值 | 说明 |
+|------|--------|------|
+| `createWarrantyAction(payload)` | `{ success }` | 提交 RMA 申请 |
+| `getWarrantyListAction(opts?)` | `{ data: WarrantyOrderDisplay[], total, current_page, last_page }` | RMA 订单列表 |
+| `getWarrantyDetailAction(id)` | `WarrantyDetailDisplay` | RMA 详情 |
+| `searchWarrantyProductAction(name, isPhone, customerId)` | `{ data: WarrantyProductDisplay[] }` | 搜索产品（Autocomplete） |
+| `searchWarrantyByImeiAction(imei, customerId)` | `{ data: WarrantyProductDisplay[] }` | 按 IMEI 搜索 |
+
+```tsx
+import { createWarrantyAction, getWarrantyListAction, getWarrantyDetailAction } from '@/src/actions/warranty';
+
+// 创建 RMA
+await createWarrantyAction({
+  reason: 'Product Faulty',
+  resolution: 'Store Credit',
+  address_id: 123,
+  customer_id: 456,
+  items: [{ variant_id: 789, quantity: 1 }],
+  note: 'Optional note...',
+});
+
+// 查询列表
+const result = await getWarrantyListAction({ page: 1, per_page: 10 });
+
+// 查询详情
+const detail = await getWarrantyDetailAction(42);
+// detail.refundItems — 已退款的商品行（含 unit_price, row_total）
+// detail.notes — 备注历史
+// detail.shipping_address — 收货地址
+```
+
 ---
 
 ## 可用 Hooks
@@ -221,6 +254,10 @@ import { getHomeContent, type Content } from '@/src/actions/plugins';
 | `useMenu()` | `{ menus, loading, fetchMenu }` | 导航菜单 |
 | `useHomeData()` | `{ contents, products, loading, fetchHomeData }` | 首页数据 |
 | `useContact()` | `{ isSubmitting, isSubmitted, submitContact, reset }` | 联系表单 |
+| `useWarrantyList()` | `{ list, total, currentPage, lastPage, loading, fetch }` | RMA 订单列表 |
+| `useWarrantyDetail()` | `{ detail, loading, fetch }` | RMA 详情 |
+| `useWarrantySearch()` | `{ searching, searchProducts, searchPhones, searchByImei }` | RMA 产品/IMEI 搜索 |
+| `useCreateWarranty()` | `{ submitting, submit }` | 创建 RMA 申请 |
 | `useLogin()` | `{ email, password, fieldErrors, isLoading, handleSubmit, ... }` | 登录表单 |
 | `useSignup()` | `{ firstName, ..., fieldErrors, isLoading, handleSendCode, submitRegistration, ... }` | 注册表单 |
 | `useForgotPassword()` | `{ step, email, ..., handleSendCode, handleResetPassword, ... }` | 忘记密码 |
