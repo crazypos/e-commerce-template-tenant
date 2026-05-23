@@ -1,11 +1,13 @@
 # 🧩 Tenant 模板开发指南
 
-本文档说明如何开发 `templates/tenant-store/` 下的模板代码。模板使用 **Next.js App Router + React + Tailwind CSS + Ant Design**，所有核心逻辑（API 请求、认证、购物车等）由平台提供，模板只需关注 UI 呈现。
+本文档说明如何开发模板代码。模板使用 **Next.js App Router + React + Tailwind CSS + Ant Design**，所有核心逻辑（API 请求、认证、购物车等）由平台提供，模板只需关注 UI 呈现。
 
 ---
 
 ## 目录
 
+- [模板架构](#模板架构)
+- [组件使用方式（两种级别）](#组件使用方式两种级别)
 - [项目结构](#项目结构)
 - [可用 API（Server Actions）](#可用-apiserver-actions)
 - [可用 Hooks](#可用-hooks)
@@ -17,35 +19,125 @@
 
 ---
 
+## 模板架构
+
+本仓库包含两层模板：
+
+### `templates/default/`（平台标准模板 — ⚠️ 只读）
+
+平台维护的标准模板，**每次 `git pull` 都可能被更新**。不要直接修改它。
+
+```
+templates/
+└── default/              ← 平台维护，只读
+    ├── pages/            ← 页面组件
+    ├── components/       ← 组件（含系统组件的副本）
+    ├── index.ts
+    ├── metadata.ts
+    ├── theme.ts
+    ├── style.css
+    └── ...
+```
+
+### `templates/my-template/`（你的自定义模板 — ✅ 自由修改）
+
+从 `default` 复制后自行修改，平台更新不影响它。
+
+**创建方式：**
+
+```bash
+# 1. 复制标准模板
+cp -rf templates/default templates/my-template
+
+# 2. 修改 docker-compose.yml，把 TEMPLATE=default 改为 TEMPLATE=my-template
+# 3. 重启
+docker compose up
+```
+
+然后你的所有改动都只影响 `my-template/`，`git pull` 更新 `default/` 时绝不冲突。
+
+---
+
+## 组件使用方式（两种级别）
+
+你的组件来源有两种：
+
+### 方式一：直接用系统组件
+
+```tsx
+// 推荐：通过 barrel 统一导入
+import { Button, AddToCartSection, Price } from '@/src/components';
+
+// 也可以直接指定文件路径
+import { TextField } from '@/src/components/ui/TextField';
+```
+
+- `@/src/components/` 下的系统组件，永远稳定可用
+- 平台更新自动同步
+- 适合通用 UI 组件（Button、TextField、Checkbox、Price、InfoCard 等）
+
+### 方式二：用自己模板下的组件
+
+```tsx
+import { AddToCartSection } from '../components';
+```
+
+`../components` 指向**当前激活的模板**下的 components/ 目录：
+- `TEMPLATE=default` → `templates/default/components/`
+- `TEMPLATE=my-template` → `templates/my-template/components/`
+
+`cp -rf templates/default templates/my-template` 后，my-template 已有全部组件副本，直接在 my-template 里改即可。
+
+---
+
 ## 项目结构
 
 ```
-templates/my-template/
-├── pages/                    ← 页面组件（平台通过 host 动态加载）
-│   ├── Layout.tsx            ← 全局布局（Header / Footer）
-│   ├── HomePage.tsx          ← 首页
-│   ├── CategoryPage.tsx      ← 分类/列表页
-│   ├── ProductDetailPage.tsx ← 商品详情页
-│   ├── CheckoutPage.tsx      ← 结账页
-│   ├── LoginPage.tsx         ← 登录页
-│   ├── SignupPage.tsx        ← 注册页
-│   ├── ForgotPasswordPage.tsx← 忘记密码
-│   ├── ProfilePage.tsx       ← 个人中心
-│   ├── ProfileOrdersPage.tsx ← 订单列表
-│   ├── OrderDetailPage.tsx   ← 订单详情
-│   ├── AddressesPage.tsx     ← 地址管理
-│   ├── ContactPage.tsx       ← 联系我们
-│   ├── FaqPage.tsx           ← 常见问题
-│   ├── PrivacyPolicyPage.tsx ← 隐私政策
-│   └── TermsPage.tsx         ← 条款条件
-├── components/               ← 模板自有组件
-│   ├── index.ts              ← barrel 文件（导出所有组件）
-│   ├── NavigationMenu.tsx    ← 导航菜单
-│   └── ProductCard.tsx       ← 商品卡片
-├── index.ts                  ← 模板入口，导出所有页面
-├── metadata.ts               ← SEO metadata
-├── theme.ts                  ← Ant Design 主题配置
-└── style.css                 ← CSS 变量
+templates/
+└── default/                     ← 平台标准模板（只读，git pull 更新）
+    ├── pages/                   ← 页面组件（平台通过 host 动态加载）
+    │   ├── Layout.tsx           ← 全局布局（Header / Footer）
+    │   ├── HomePage.tsx         ← 首页
+    │   ├── CategoryPage.tsx     ← 分类/列表页
+    │   ├── ProductDetailPage.tsx ← 商品详情页
+    │   ├── CheckoutPage.tsx     ← 结账页
+    │   ├── LoginPage.tsx        ← 登录页
+    │   ├── SignupPage.tsx       ← 注册页
+    │   ├── ForgotPasswordPage.tsx ← 忘记密码
+    │   ├── ProfilePage.tsx      ← 个人中心
+    │   ├── ProfileOrdersPage.tsx ← 订单列表
+    │   ├── OrderDetailPage.tsx  ← 订单详情
+    │   ├── AddressesPage.tsx    ← 地址管理
+    │   ├── ContactPage.tsx      ← 联系我们
+    │   ├── FaqPage.tsx          ← 常见问题
+    │   ├── PrivacyPolicyPage.tsx ← 隐私政策
+    │   ├── TermsPage.tsx        ← 条款条件
+    │   ├── BusinessSignupPage.tsx ← 企业注册
+    │   ├── TeamMemberPage.tsx   ← 团队管理
+    │   ├── RmaPage.tsx          ← 售后（RMA）列表
+    │   ├── RmaCreatePage.tsx    ← 新建售后
+    │   └── RmaDetailPage.tsx    ← 售后详情
+    ├── components/              ← 组件（模板自有 + 系统组件副本）
+    │   ├── index.ts             ← barrel 文件（导出所有组件）
+    │   ├── NavigationMenu.tsx   ← 导航菜单
+    │   ├── ProductCard.tsx      ← 商品卡片
+    │   ├── AddToCartSection.tsx ← 加购区域（可改）
+    │   ├── RecommendedProducts.tsx ← 推荐商品（可改）
+    │   ├── UserProfile.tsx      ← 用户信息（可改）
+    │   ├── OrderList.tsx        ← 订单列表（可改）
+    │   ├── OrderDetail.tsx      ← 订单详情（可改）
+    │   ├── AddressList.tsx      ← 地址列表（可改）
+    │   ├── TermsContent.tsx     ← 条款内容（可改）
+    │   ├── AddressSearchInput.tsx ← 地址搜索（可改）
+    │   └── checkout/            ← 结账流程组件（可改）
+    ├── index.ts                 ← 模板入口，导出所有页面
+    ├── metadata.ts              ← SEO metadata
+    ├── theme.ts                 ← Ant Design 主题配置
+    └── style.css                ← CSS 变量
+
+# 如需自定义，运行：
+# cp -rf templates/default templates/my-template
+# 然后修改 docker-compose.yml 中 TEMPLATE=my-template
 ```
 
 ---
@@ -358,18 +450,30 @@ const {
 
 ## 可用组件
 
-### 模板自有组件（在 `components/` 目录下）
+组件来源有两种，详见前面的[组件使用方式](#组件使用方式两种级别)。
 
-| 组件 | Props | 说明 |
-|------|-------|------|
-| `NavigationMenu` | `{ variant, menus, pathname, user, onNavigate? }` | 导航菜单（desktop/mobile） |
-| `ProductCard` | `{ product: ProductListItem }` | 商品卡片 |
+### 模板自有组件副本（在 `components/` 下）
+
+以下组件已从系统复制到模板的 `components/` 目录，有源代码可直接修改：
+
+| 组件 | 说明 |
+|------|------|
+| `AddToCartSection` | 加购区域（含规格选择、数量、按钮） |
+| `RecommendedProducts` | 推荐商品横向滚动 |
+| `UserProfile` | 用户个人信息 |
+| `OrderList` | 订单列表 |
+| `OrderDetail` | 订单详情 |
+| `AddressList` | 地址管理列表 |
+| `AddressSearchInput` | 地址自动搜索 |
+| `TermsContent` | 条款内容 |
+| `checkout/*` | 结账流程（BillingSection、ContactInfoSection 等） |
+| `NavigationMenu` | 导航菜单 |
+| `ProductCard` | 商品卡片 |
 
 ### 平台公共组件（从 `@/src/components/*` 导入）
 
 ```tsx
-// 模板通过 barrel 文件导出，引用方式：
-import { Button, Link, CartDrawerItem, ... } from '../components';
+import { Button, Link, CartDrawerItem, ... } from '@/src/components/...';
 ```
 
 | 组件 | 说明 |
@@ -383,14 +487,8 @@ import { Button, Link, CartDrawerItem, ... } from '../components';
 | `Price` | 价格显示（含会员价、促销价） |
 | `CartDrawer` | 侧滑购物车抽屉 |
 | `CartDrawerItem` | 购物车项 |
-| `AddToCartSection` | 添加到购物车区域（含规格选择） |
 | `QuickAddButton` | 快速加购按钮 |
-| `RecommendedProducts` | 推荐商品 |
 | `InfoCard` | 信息卡片 |
-| `UserProfile` | 用户信息组件 |
-| `OrderList` | 订单列表组件 |
-| `OrderDetail` | 订单详情组件 |
-| `AddressList` | 地址列表组件 |
 | `PaymentMethods` | 支付方式选择组件 |
 | `NotifyMeModal` | 到货通知弹窗 |
 | `BillingAddressSection` | 账单地址区域 |
@@ -567,6 +665,44 @@ export const theme: ThemeConfig = {
 
 ## 常见问题
 
+### Q: 我应该用 `default` 还是复制成 `my-template`？
+
+直接使用 `default` 最简单，但如果要改组件（比如改按钮样式），一定要先 `cp -rf templates/default templates/my-template`，否则 `git pull` 会覆盖你的改动。
+
+### Q: 只想改一个组件，也要复制整个模板吗？
+
+不用复制整个模板。如果你只想改个别组件：
+
+1. 保持 `TEMPLATE=default` 不变
+2. 直接 import 系统组件：`import { Button } from '@/src/components/ui/Button'`
+3. 如果需要改特定组件的源代码，再切换到 my-template
+
+或者也可以部分复制：
+
+```bash
+# 创建 my-template（只需 pages 目录 + 自己改的文件）
+mkdir -p templates/my-template/components
+cp templates/default/pages/* templates/my-template/pages/
+cp templates/default/components/index.ts templates/my-template/components/
+cp templates/default/index.ts templates/my-template/
+# 然后复制你要改的那个组件
+cp templates/default/components/AddToCartSection.tsx templates/my-template/components/
+# 修改 docker-compose.yml TEMPLATE=my-template
+```
+
+### Q: `git pull` 会不会把 default 里面的组件覆盖掉？
+
+会的。`default/` 是平台维护的，每次 `git pull` 都可能更新。所以**不要直接改 `default/`**。把要改的文件复制到 `my-template/` 后再改。
+
+### Q: `my-template` 里的组件怎么导入？
+
+```tsx
+// 和 default 一样，从 ../components 导入
+import { AddToCartSection } from '../components';
+```
+
+`../components` 指向当前激活模板（`TEMPLATE` 环境变量指定）下的 `components/` 目录。
+
 ### Q: 需要安装 npm 包吗？
 
 不需要。所有依赖（React、Ant Design、Tailwind、dayjs、decimal.js 等）已在 Docker 镜像中预装。模板只写 JSX + CSS。
@@ -589,4 +725,5 @@ export const theme: ThemeConfig = {
 
 ### Q: 模板开发完成后怎么办？
 
-把 `templates/tenant-store/` 整个文件夹发回给平台方，由平台方部署到生产环境。
+- 如果基于 `default` 且没改过 → 无需操作，平台自动更新
+- 如果用了 `my-template` → 把 `templates/my-template/` 整个发给平台方，由平台方部署到生产环境
