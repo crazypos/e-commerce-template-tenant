@@ -1,0 +1,17 @@
+# 🚀 Tenant my-template 本地开发配置
+# 用法：docker compose up
+services:
+  dev:
+    image: ghcr.io/crazypos/e-commerce-template-docker:latest
+    ports:
+      - "3303:3303"
+    environment:
+      - TEMPLATE=my-template
+      - ADMIN_TOKEN=tok_test
+      - STRAPI_TOKEN=tok_test
+      - NEXT_PUBLIC_API_URL=https://test3.crazypos.com/api
+      - BASE_URL=http://localhost:3303
+      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
+    volumes:
+      - ./templates:/app/templates
