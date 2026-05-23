@@ -23,7 +23,7 @@ export { AddToCartSection } from './AddToCartSection';
 export { RecommendedProducts } from './RecommendedProducts';
 export { default as Price } from '@/src/components/Price';
 export { QuickAddButton } from '@/src/components/QuickAddButton';
-export { InfoCard } from './ui/InfoCard';
+export { InfoCard } from '@/src/components/ui/InfoCard';
 
 // 用户（模板自有副本，可直接修改）
 export { UserProfile } from './UserProfile';
