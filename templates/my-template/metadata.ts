@@ -1,19 +1,19 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://example.com'),
+  metadataBase: new URL('https://ticobakery.example.com'),
   title: {
-    default: 'My Store',
-    template: '%s | My Store',
+    default: 'CrazyPOS E Commerce',
+    template: '%s | CrazyPOS E Commerce',
   },
   description:
-    'Welcome to My Store. Discover amazing products at great prices.',
+    'Discover amazing products at great prices. Fast shipping, easy checkout, and exceptional customer service.',
   openGraph: {
-    title: 'My Store',
+    title: 'CrazyPOS E Commerce',
     description:
-      'Welcome to My Store. Discover amazing products at great prices.',
-    url: 'https://example.com',
-    siteName: 'My Store',
+      'Discover amazing products at great prices. Fast shipping, easy checkout, and exceptional customer service.',
+    url: 'https://ticobakery.example.com',
+    siteName: 'CrazyPOS E Commerce',
     images: [
       {
         url: '/og-image.jpg',

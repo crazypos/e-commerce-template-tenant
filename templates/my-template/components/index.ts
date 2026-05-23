@@ -25,11 +25,17 @@ export { default as Price } from '@/src/components/Price';
 export { QuickAddButton } from '@/src/components/QuickAddButton';
 export { InfoCard } from '@/src/components/ui/InfoCard';
 
-// 用户
-export { UserProfile } from '@/src/components/UserProfile';
-export { OrderList } from '@/src/components/OrderList';
-export { OrderDetail } from '@/src/components/OrderDetail';
-export { AddressList } from '@/src/components/AddressList';
+// 用户（模板自有副本，可直接修改）
+export { UserProfile } from './UserProfile';
+export { OrderList } from './OrderList';
+export { OrderDetail } from './OrderDetail';
+export { AddressList } from './AddressList';
+
+// 结账（模板自有副本）
+export { CheckoutPage } from './checkout';
+
+// 条款（模板自有副本）
+export { TermsContent } from './TermsContent';
 
 // UI 基础组件
 export { Button } from '@/src/components/ui/Button';
