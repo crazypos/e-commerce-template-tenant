@@ -19,7 +19,7 @@ export { MotionDiv, MotionH1, MotionP } from '@/src/components/Motion';
 export { default as HomeOrderNowBtn } from '@/src/components/HomeOrderNowBtn';
 
 // 商品
-export { AddToCartSection } from '@/src/components/AddToCartSection';
+export { AddToCartSection } from './AddToCartSection';
 export { RecommendedProducts } from '@/src/components/RecommendedProducts';
 export { default as Price } from '@/src/components/Price';
 export { QuickAddButton } from '@/src/components/QuickAddButton';
