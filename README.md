@@ -11,7 +11,7 @@ CrazyPOS 电商模板的 tenant 开发环境。
 ```
 ├── TEMPLATE_DEV_GUIDE.md       ← 📖 从这里开始！完整的开发文档
 ├── templates/
-│   └── my-store/           ← 模板代码（改这里！）
+│   └── my-template/           ← 模板代码（改这里！）
 │       ├── pages/              ← 页面组件
 │       ├── components/         ← 自定义组件
 │       ├── index.ts            ← 页面导出

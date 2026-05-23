@@ -20,7 +20,7 @@
 ## 项目结构
 
 ```
-templates/tenant-store/
+templates/my-template/
 ├── pages/                    ← 页面组件（平台通过 host 动态加载）
 │   ├── Layout.tsx            ← 全局布局（Header / Footer）
 │   ├── HomePage.tsx          ← 首页
