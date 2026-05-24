@@ -57,7 +57,7 @@ export default function DefaultNavigationMenu({
       { id: 'home', name: 'Home', path: '/', external: false },
       ...(menus?.map(transformMenu).filter(m => m !== null) || []),
       { id: 'contact', name: 'Contact Us', path: '/contact', external: false },
-      { id: 'about', name: 'About Us', path: '/static/about', external: false },
+      { id: 'about', name: 'About Us', path: '/page/about', external: false },
     ];
   }, [menus]);
 

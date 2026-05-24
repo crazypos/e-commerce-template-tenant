@@ -5,7 +5,7 @@ import { AboutPage } from './AboutPage';
 /**
  * 通用静态页面路由。
  *
- * slug 由 URL 路径决定：/static/about → slug='about'
+ * slug 由 URL 路径决定：/page/about → slug='about'
  * 在 switch 中添加新的 case 即可新增页面。
  *
  * 每个 case 渲染独立的页面组件，和 HomePage、ContactPage 一样，

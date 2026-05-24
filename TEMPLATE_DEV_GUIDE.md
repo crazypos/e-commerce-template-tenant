@@ -656,7 +656,7 @@ export const theme: ThemeConfig = {
 
 ### 方案一：使用通用静态页面路由（Tenant 自助，推荐）
 
-平台已内置 `/static/[slug]` 路由。你只需在 `StaticPage.tsx` 中按 slug 映射到对应的页面组件：
+平台已内置 `/page/[slug]` 路由。你只需在 `StaticPage.tsx` 中按 slug 映射到对应的页面组件：
 
 ```tsx
 // templates/my-template/pages/AboutPage.tsx
@@ -710,8 +710,8 @@ const navLinks: NavLink[] = React.useMemo(() => {
       { id: 'home', name: 'Home', path: '/', external: false },
       ...(menus?.map(transformMenu).filter(m => m !== null) || []),
       // 自定义静态页面链接
-      { id: 'about', name: 'About Us', path: '/static/about', external: false },
-      { id: 'shipping', name: 'Shipping', path: '/static/shipping', external: false },
+      { id: 'about', name: 'About Us', path: '/page/about', external: false },
+      { id: 'shipping', name: 'Shipping', path: '/page/shipping', external: false },
       { id: 'contact', name: 'Contact Us', path: '/contact', external: false },
     ];
   }, [menus]);
@@ -721,7 +721,7 @@ const navLinks: NavLink[] = React.useMemo(() => {
 
 ### 方案二：需要平台配合的新路由
 
-如果路由路径不是 `/static/xxx` 格式（如 `/custom-page`），则需要平台方配合：
+如果路由路径不是 `/page/xxx` 格式（如 `/custom-page`），则需要平台方配合：
 
 1. 在 `pages/` 下创建文件（如 `CustomPage.tsx`）
 2. 在 `index.ts` 中添加 export
@@ -850,7 +850,7 @@ const navLinks: NavLink[] = React.useMemo(() => {
     return [
       { id: 'home', name: 'Home', path: '/', external: false },
       ...(menus?.map(transformMenu).filter(m => m !== null) || []),
-      { id: 'about', name: 'About Us', path: '/static/about', external: false }, // ← 加这里
+      { id: 'about', name: 'About Us', path: '/page/about', external: false }, // ← 加这里
       { id: 'contact', name: 'Contact Us', path: '/contact', external: false },
     ];
   }, [menus]);
