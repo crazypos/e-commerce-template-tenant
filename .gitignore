@@ -1,6 +1,8 @@
 node_modules/
 .DS_Store
 *.log
+.env
 
-# tenant 自定义模板，由 cp -rf templates/default templates/my-template 创建
-templates/my-template/
+# 只保留 default 模板，其他模板目录（my-template/、bob/ 等）都是 tenant 本地创建
+templates/*
+!templates/default/

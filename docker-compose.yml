@@ -1,16 +1,20 @@
 # 🚀 本地开发配置
 # 用法：docker compose up
+#
+# 可设置项在 .env 文件中（复制 .env.example 创建），
+# 不创建 .env 则使用下方默认值。
+
 services:
   dev:
     image: ghcr.io/crazypos/e-commerce-template-docker:latest
     ports:
       - "3303:3303"
     environment:
-      - TEMPLATE=my-template
-      - ADMIN_TOKEN=your_admin_token
-      - STRAPI_TOKEN=your_strapi_token
-      - NEXT_PUBLIC_API_URL=https://test3.crazypos.com/api
-      - BASE_URL=http://localhost:3303
+      - TEMPLATE=${TEMPLATE:-my-template}
+      - ADMIN_TOKEN=${ADMIN_TOKEN:-your_admin_token}
+      - STRAPI_TOKEN=${STRAPI_TOKEN:-your_strapi_token}
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-https://test3.crazypos.com/api}
+      - BASE_URL=${BASE_URL:-http://localhost:3303}
       - CHOKIDAR_USEPOLLING=true
       - WATCHPACK_POLLING=true
     volumes:
