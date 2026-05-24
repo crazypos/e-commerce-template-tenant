@@ -654,12 +654,81 @@ export const theme: ThemeConfig = {
 
 ## 如何新增页面
 
-1. 在 `pages/` 下创建文件（如 `AboutPage.tsx`）
-2. 在 `index.ts` 中添加 export
-3. 在平台的 `src/config/template.ts` 的 `TemplatePages` 接口中添加类型
-4. 在 `app/` 下添加对应的路由页面，调用 `getTemplatePages()` 获取组件
+### 方案一：使用通用静态页面路由（Tenant 自助，推荐）
 
-> ⚠️ 步骤 3-4 需要平台方配合修改核心代码。
+平台已内置 `/static/[slug]` 路由。你只需在 `StaticPage.tsx` 中按 slug 映射到对应的页面组件：
+
+```tsx
+// templates/my-template/pages/AboutPage.tsx
+export function AboutPage() {
+  return (
+    <div className="max-w-3xl mx-auto py-12 px-4">
+      <h1 className="text-3xl font-bold mb-4">About Us</h1>
+      <p className="text-gray-600">
+        We are a team dedicated to providing the best service...
+      </p>
+    </div>
+  );
+}
+```
+
+```tsx
+// templates/my-template/pages/ShippingPage.tsx
+export function ShippingPage() {
+  return (
+    <div className="max-w-3xl mx-auto py-12 px-4">
+      <h1 className="text-3xl font-bold mb-4">Shipping Policy</h1>
+      {/* 完全自定义的页面内容 */}
+    </div>
+  );
+}
+```
+
+```tsx
+// templates/my-template/pages/StaticPage.tsx
+import { AboutPage } from './AboutPage';
+import { ShippingPage } from './ShippingPage';
+
+export function StaticPage({ slug }: { slug: string }) {
+  switch (slug) {
+    case 'about':
+      return <AboutPage />;
+    case 'shipping':
+      return <ShippingPage />;
+    default:
+      return <div className="text-center py-20 text-gray-400">Page not found</div>;
+  }
+}
+```
+
+然后在 `NavigationMenu.tsx` 中添加到导航菜单。在 `navLinks` 数组里加一项：
+
+```tsx
+// templates/my-template/components/NavigationMenu.tsx
+const navLinks: NavLink[] = React.useMemo(() => {
+    return [
+      { id: 'home', name: 'Home', path: '/', external: false },
+      ...(menus?.map(transformMenu).filter(m => m !== null) || []),
+      // 自定义静态页面链接
+      { id: 'about', name: 'About Us', path: '/static/about', external: false },
+      { id: 'shipping', name: 'Shipping', path: '/static/shipping', external: false },
+      { id: 'contact', name: 'Contact Us', path: '/contact', external: false },
+    ];
+  }, [menus]);
+```
+
+> 每个 slug 对应一个完整的独立页面组件，和 `HomePage`、`ContactPage` 一样，没有内容限制。
+
+### 方案二：需要平台配合的新路由
+
+如果路由路径不是 `/static/xxx` 格式（如 `/custom-page`），则需要平台方配合：
+
+1. 在 `pages/` 下创建文件（如 `CustomPage.tsx`）
+2. 在 `index.ts` 中添加 export
+3. 平台在 `src/config/template.ts` 的 `TemplatePages` 接口中添加类型
+4. 平台在 `app/` 下添加对应的路由页面，调用 `getTemplatePages()` 获取组件
+
+> ⚠️ 步骤 3-4 需要平台方修改核心代码并重新构建 Docker 镜像。
 
 ---
 
@@ -667,28 +736,44 @@ export const theme: ThemeConfig = {
 
 ### Q: 我应该用 `default` 还是复制成 `my-template`？
 
-直接使用 `default` 最简单，但如果要改组件（比如改按钮样式），一定要先 `cp -rf templates/default templates/my-template`，否则 `git pull` 会覆盖你的改动。
+建议始终使用 `my-template`。因为 `default/` 是平台维护的，每次 `git pull` 都可能覆盖你的改动。
+
+```bash
+cp -rf templates/default templates/my-template
+# 修改 .env：TEMPLATE=default → TEMPLATE=my-template
+# 重启
+docker compose up
+```
+
+之后所有改动都在 `my-template/` 里，完全不受 `git pull` 影响。
+
+只有当你**完全不需要任何自定义**（纯用标准模板）时，才可以直接用 `default`。
 
 ### Q: 只想改一个组件，也要复制整个模板吗？
 
-不用复制整个模板。如果你只想改个别组件：
-
-1. 保持 `TEMPLATE=default` 不变
-2. 直接 import 系统组件：`import { Button } from '@/src/components/ui/Button'`
-3. 如果需要改特定组件的源代码，再切换到 my-template
-
-或者也可以部分复制：
+建议复制整个模板，这是最干净的方式：
 
 ```bash
-# 创建 my-template（只需 pages 目录 + 自己改的文件）
+cp -rf templates/default templates/my-template
+# 修改 .env：TEMPLATE=default → TEMPLATE=my-template
+# 重启
+docker compose up
+```
+
+如果确实只想复制个别文件，也可以部分复制：
+
+```bash
+# 创建 my-template 骨架（最少文件）
 mkdir -p templates/my-template/components
 cp templates/default/pages/* templates/my-template/pages/
 cp templates/default/components/index.ts templates/my-template/components/
 cp templates/default/index.ts templates/my-template/
 # 然后复制你要改的那个组件
 cp templates/default/components/AddToCartSection.tsx templates/my-template/components/
-# 修改 docker-compose.yml TEMPLATE=my-template
+# 修改 .env：TEMPLATE=my-template
 ```
+
+> 注意：如果要用系统组件，直接通过 `@/src/` 导入即可，不需要复制。
 
 ### Q: `git pull` 会不会把 default 里面的组件覆盖掉？
 
@@ -698,8 +783,9 @@ cp templates/default/components/AddToCartSection.tsx templates/my-template/compo
 
 ```bash
 cp -rf templates/default templates/my-template
-# docker-compose.yml 里 TEMPLATE=my-template
+# 修改 .env：TEMPLATE=default → TEMPLATE=my-template
 # 重启
+docker compose up
 ```
 
 之后 `my-template/` 完全不受 `git pull` 影响。需要同步平台更新时手动对比合并。
@@ -720,6 +806,59 @@ import { AddToCartSection } from '../components';
 ### Q: 我的改动需要重启吗？
 
 不需要。Docker 开发环境自动热更新（CHOKIDAR_USEPOLLING + WATCHPACK_POLLING），改完文件浏览器即时刷新。
+
+### Q: 想新增一个自定义页面（如 /about）怎么做？
+
+用 `StaticPage` 机制。在 `pages/` 下创建独立页面组件，然后在 `StaticPage.tsx` 中通过 slug 映射：
+
+```tsx
+// pages/AboutPage.tsx — 完整页面组件，自己写内容
+export function AboutPage() {
+  return (
+    <div className="max-w-3xl mx-auto py-12 px-4">
+      <h1 className="text-3xl font-bold mb-4">About Us</h1>
+      <p className="text-gray-600">Your content here...</p>
+    </div>
+  );
+}
+
+// pages/ShippingPage.tsx
+export function ShippingPage() {
+  return (
+    <div className="max-w-3xl mx-auto py-12 px-4">
+      <h1 className="text-3xl font-bold mb-4">Shipping Policy</h1>
+      {/* 完全自定义，没有内容限制 */}
+    </div>
+  );
+}
+
+// pages/StaticPage.tsx — slug 路由
+export function StaticPage({ slug }: { slug: string }) {
+  switch (slug) {
+    case 'about': return <AboutPage />;
+    case 'shipping': return <ShippingPage />;
+    default: return <div className="text-center py-20 text-gray-400">Page not found</div>;
+  }
+}
+```
+
+导航菜单加一项，在 `NavigationMenu.tsx` 的 `navLinks` 数组中添加：
+
+```tsx
+// templates/my-template/components/NavigationMenu.tsx
+const navLinks: NavLink[] = React.useMemo(() => {
+    return [
+      { id: 'home', name: 'Home', path: '/', external: false },
+      ...(menus?.map(transformMenu).filter(m => m !== null) || []),
+      { id: 'about', name: 'About Us', path: '/static/about', external: false }, // ← 加这里
+      { id: 'contact', name: 'Contact Us', path: '/contact', external: false },
+    ];
+  }, [menus]);
+```
+
+> 每个 slug 对应一个完整的独立页面，和 `HomePage`、`ContactPage` 一样，用 `'use client'`、用 Hooks、用 Ant Design 等完全自由。
+
+详细说明见上方「[如何新增页面](#如何新增页面)」。
 
 ### Q: 可以直接调用后端 API 吗？
 

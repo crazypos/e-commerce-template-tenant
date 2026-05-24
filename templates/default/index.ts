@@ -18,6 +18,7 @@ export { TeamMemberPage } from './pages/TeamMemberPage';
 export { RmaPage } from './pages/RmaPage';
 export { RmaDetailPage } from './pages/RmaDetailPage';
 export { RmaCreatePage } from './pages/RmaCreatePage';
+export { StaticPage } from './pages/StaticPage';
 export { Layout } from './pages/Layout';
 export { CartDrawer } from '@/src/components/CartDrawer';
 export { FacebookChat } from '@/src/components/FacebookChat';
