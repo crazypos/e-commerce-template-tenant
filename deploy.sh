@@ -18,11 +18,26 @@ CYAN='\033[0;36m'
 NC='\033[0m'
 
 # ── Config ──────────────────────────────────────────────
-AUTH_URL="http://deploy.crazypos.local/tenant/auth.php"
-DEPLOY_URL="http://deploy.crazypos.local/tenant/api.php"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 ENV_FILE="$SCRIPT_DIR/.env"
 TEMPLATES_DIR="$SCRIPT_DIR/templates"
+
+# 从 .env 读取配置（含 AUTH_URL / DEPLOY_URL）
+AUTH_URL=""
+DEPLOY_URL=""
+TEMPLATE=""
+if [ -f "$ENV_FILE" ]; then
+  while IFS='=' read -r key val || [ -n "$key" ]; do
+    key=$(echo "$key" | tr -d '[:space:]')
+    val=$(echo "$val" | sed "s/^['\"]//;s/['\"]$//" | sed 's/#.*//')
+    [ -z "$key" ] && continue
+    case "$key" in
+      TEMPLATE) TEMPLATE="$val" ;;
+      AUTH_URL) AUTH_URL="$val" ;;
+      DEPLOY_URL) DEPLOY_URL="$val" ;;
+    esac
+  done < <(grep -v '^\s*#' "$ENV_FILE" | grep -v '^\s*$')
+fi
 
 echo -e "${CYAN}━━━  Tenant Template Deploy  ━━━${NC}"
 echo ""
@@ -34,8 +49,15 @@ if [ ! -f "$ENV_FILE" ]; then
   exit 1
 fi
 
-TEMPLATE=$(grep -E '^TEMPLATE=' "$ENV_FILE" | sed 's/^TEMPLATE=//' | tr -d '[:space:]')
 TEMPLATE="${TEMPLATE:-default}"
+
+if [ -z "$AUTH_URL" ] || [ -z "$DEPLOY_URL" ]; then
+  echo -e "${RED}✗ AUTH_URL and DEPLOY_URL must be set in .env${NC}"
+  echo "  Example:"
+  echo "    AUTH_URL=http://deploy.crazypos.local/tenant/auth.php"
+  echo "    DEPLOY_URL=http://deploy.crazypos.local/tenant/api.php"
+  exit 1
+fi
 
 echo -e "  Template: ${CYAN}${TEMPLATE}${NC}"
 
@@ -85,12 +107,23 @@ while [ -z "$TOKEN" ]; do
 
   echo ""
   echo -e "  Authenticating..."
+  echo -e "  → ${AUTH_URL}"
 
   AUTH_RESPONSE=$(mktemp)
   AUTH_HTTP_CODE=$(curl -s -S -w "%{http_code}" -o "$AUTH_RESPONSE" \
+    --connect-timeout 10 \
+    --max-time 30 \
     -H "Content-Type: application/json" \
     -d "$(printf '{"email":"%s","password":"%s"}' "$EMAIL" "$PASSWORD")" \
     "$AUTH_URL" 2>&1)
+  CURL_EXIT=$?
+
+  if [ $CURL_EXIT -ne 0 ]; then
+    echo -e "${RED}  Connection failed (curl exit code: $CURL_EXIT)${NC}"
+    echo "  Check: can you reach ${AUTH_URL} from this server?"
+    echo "    Try: curl -v --connect-timeout 5 '${AUTH_URL}'"
+    exit 1
+  fi
 
   AUTH_BODY=$(cat "$AUTH_RESPONSE")
   rm -f "$AUTH_RESPONSE"
